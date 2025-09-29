@@ -9,6 +9,7 @@ from django.http import HttpResponseForbidden
 from .models import UserProfile
 from django.shortcuts import render, get_object_or_404, redirect
 from django.contrib.auth.decorators import permission_required
+from django.contrib.auth.views import LoginView, LogoutView
 
 def list_books(request):
 	books = Book.objects.all()
