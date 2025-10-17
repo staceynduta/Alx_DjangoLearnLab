@@ -5,7 +5,8 @@ from django.contrib.auth.decorators import login_required
 from django.contrib.auth.forms import AuthenticationForm
 from django.urls import reverse_lazy
 from django.views import View
-from .forms import CustomUserCreationForm, CommentForm
+from .forms import CommentForm
+from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.models import User
 from django import forms
 from django.views.generic import ListView, DetailView, CreateView, UpdateView, DeleteView
@@ -67,13 +68,13 @@ class CommentCreateView(LoginRequiredMixin, CreateView):
 
     def form_valid(self, form):
         # Set the post and author when the form is valid
-        post = get_object_or_404(Post, id=self.kwargs['post_id'])
+        post = get_object_or_404(Post, id=self.kwargs['pk'])
         form.instance.post = post
         form.instance.author = self.request.user
         return super().form_valid(form)
 
     def get_success_url(self):
-        return reverse_lazy('post-detail', kwargs={'pk': self.kwargs['post_id']})
+        return reverse_lazy('post-detail', kwargs={'pk': self.kwargs['pk']})
 
 
 # Update Comment View (for editing existing comments)
@@ -153,13 +154,13 @@ class ProfileUpdateForm(forms.ModelForm):
 # Register View
 def register_view(request):
     if request.method == 'POST':
-        form = CustomUserCreationForm(request.POST)
+        form = UserCreationForm(request.POST)
         if form.is_valid():
             user = form.save()
             login(request, user)
             return redirect('profile')
     else:
-        form = CustomUserCreationForm()
+        form = UserCreationForm()
     return render(request, 'blog/register.html', {'form': form})
 
 
